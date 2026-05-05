@@ -26,7 +26,7 @@ define Package/$(PKG_NAME)/install
 	$(INSTALL_DATA) ./root/usr/share/luci/menu.d/*.json $(1)/usr/share/luci/menu.d/
 
 	$(INSTALL_DIR) $(1)/usr/share/privaterouter/apks
-	$(INSTALL_DATA) ./apks/*.apk $(1)/usr/share/privaterouter/apks/
+	$(INSTALL_DATA) ./apks/*.ipk $(1)/usr/share/privaterouter/apks/
 
 	$(INSTALL_DIR) $(1)/www/luci-static/resources/view/simple/i18n
 	$(INSTALL_DATA) ./htdocs/luci-static/resources/view/simple/i18n/*.json $(1)/www/luci-static/resources/view/simple/i18n/
