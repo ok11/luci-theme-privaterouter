@@ -15,7 +15,6 @@ jobs:
           - x86_64
           - aarch64_generic
         branch:
-          - openwrt-24.10
           - SNAPSHOT
 
     steps:
