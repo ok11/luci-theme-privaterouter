@@ -42,8 +42,7 @@ var BUNDLES = [
 		desc: 'Fast, modern VPN tunnel. Required for TorGuard WireGuard and custom WireGuard configs.',
 		icon: SVG.vpn,
 		color: '#7c3aed',
-		packages: ['wireguard-tools', 'kmod-wireguard', 'luci-proto-wireguard', 'qrencode'],
-		local_apks: ['tgwireguard_2.0.9-r0_all.ipk', 'tgwireguard2_2.0.9-r0_all.ipk']
+		packages: ['wireguard-tools', 'kmod-wireguard', 'luci-proto-wireguard', 'qrencode', 'tgwireguard', 'tgwireguard2']
 	},
 	{
 		id: 'openvpn',
@@ -51,8 +50,7 @@ var BUNDLES = [
 		desc: 'Trusted, versatile VPN protocol. Required for TorGuard OpenVPN connections.',
 		icon: SVG.vpn,
 		color: '#ea580c',
-		packages: ['openvpn-openssl'],
-		local_apks: ['tgopenvpn_25.052.15245.cfd9c4d_all.ipk']
+		packages: ['openvpn-openssl', 'tgopenvpn']
 	},
 	{
 		id: 'v2ray',
@@ -60,8 +58,7 @@ var BUNDLES = [
 		desc: 'Advanced proxy and tunneling platform. Required for TorGuard V2Ray connections.',
 		icon: SVG.vpn,
 		color: '#0891b2',
-		packages: ['sing-box', 'curl', 'jq', 'bash', 'coreutils-base64'],
-		local_apks: ['tgv2ray_1.0.0-6_all.ipk']
+		packages: ['sing-box', 'curl', 'jq', 'bash', 'coreutils-base64', 'tgv2ray']
 	},
 	{
 		id: 'smb',
@@ -170,8 +167,7 @@ var BUNDLES = [
 		desc: 'Create a mesh Wi-Fi network across multiple routers for seamless whole-home coverage using Batman-adv.',
 		icon: SVG.net,
 		color: '#059669',
-		packages: ['kmod-batman-adv', 'batctl-default'],
-		local_apks: ['luci-app-easymesh_3.8.17-r1_all.ipk']
+		packages: ['kmod-batman-adv', 'batctl-default', 'luci-app-easymesh']
 	},
 	{
 		id: 'snort3',
@@ -220,21 +216,13 @@ return view.extend({
 	bundleInstalled: function(bundle) {
 		var self = this;
 		var installed = 0;
-		var allPkgs = bundle.packages.slice();
-		(bundle.local_apks || []).forEach(function(f) { allPkgs.push(self.apkPkgName(f)); });
-		allPkgs.forEach(function(p) { if (self._installed[p]) installed++; });
-		return { installed: installed, total: allPkgs.length, full: installed === allPkgs.length };
-	},
-
-	apkPkgName: function(filename) {
-		return filename.replace(/_[0-9].*$/, '').replace(/-[0-9].*$/, '');
+		bundle.packages.forEach(function(p) { if (self._installed[p]) installed++; });
+		return { installed: installed, total: bundle.packages.length, full: installed === bundle.packages.length };
 	},
 
 	runPkgAction: function(action, bundle, btn, statusEl) {
 		var self = this;
 		var packages = bundle.packages;
-		var localApks = bundle.local_apks || [];
-		var APK_DIR = '/usr/share/privaterouter/apks/';
 
 		btn.disabled = true;
 		btn.style.opacity = '0.6';
@@ -245,11 +233,7 @@ return view.extend({
 		if (action === 'install') {
 			cmds.push('apk update 2>&1');
 			packages.forEach(function(p) { cmds.push('apk add ' + p + ' 2>&1'); });
-			localApks.forEach(function(f) { cmds.push('apk add --allow-untrusted ' + APK_DIR + f + ' 2>&1'); });
 		} else {
-			localApks.slice().reverse().forEach(function(f) {
-				cmds.push('apk del ' + self.apkPkgName(f) + ' 2>&1');
-			});
 			packages.slice().reverse().forEach(function(p) { cmds.push('apk del ' + p + ' 2>&1'); });
 		}
 
@@ -351,16 +335,6 @@ return view.extend({
 					: el('span', 'sw-pkg-dot sw-pkg-missing');
 				pkgItem.appendChild(pkgStatus);
 				pkgItem.appendChild(el('span', 'sw-pkg-name', p));
-				pkgList.appendChild(pkgItem);
-			});
-			(b.local_apks || []).forEach(function(f) {
-				var pName = self.apkPkgName(f);
-				var pkgItem = el('div', 'sw-pkg-item');
-				var pkgStatus = self._installed[pName]
-					? el('span', 'sw-pkg-dot sw-pkg-installed')
-					: el('span', 'sw-pkg-dot sw-pkg-missing');
-				pkgItem.appendChild(pkgStatus);
-				pkgItem.appendChild(el('span', 'sw-pkg-name', pName + ' (bundled)'));
 				pkgList.appendChild(pkgItem);
 			});
 			card.appendChild(pkgList);

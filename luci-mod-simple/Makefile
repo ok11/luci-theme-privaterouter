@@ -2,7 +2,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=luci-mod-simple
 PKG_VERSION:=1.0.0
-PKG_RELEASE:=5
+PKG_RELEASE:=6
 
 PKG_LICENSE:=MIT
 PKG_MAINTAINER:=OAT Theme Contributors
@@ -24,9 +24,6 @@ define Package/$(PKG_NAME)/install
 	$(INSTALL_DATA) ./htdocs/luci-static/resources/view/simple/css/*.css $(1)/www/luci-static/resources/view/simple/css/
 	$(INSTALL_DATA) ./root/usr/share/rpcd/acl.d/*.json $(1)/usr/share/rpcd/acl.d/
 	$(INSTALL_DATA) ./root/usr/share/luci/menu.d/*.json $(1)/usr/share/luci/menu.d/
-
-	$(INSTALL_DIR) $(1)/usr/share/privaterouter/apks
-	$(INSTALL_DATA) ./apks/*.ipk $(1)/usr/share/privaterouter/apks/
 
 	$(INSTALL_DIR) $(1)/www/luci-static/resources/view/simple/i18n
 	$(INSTALL_DATA) ./htdocs/luci-static/resources/view/simple/i18n/*.json $(1)/www/luci-static/resources/view/simple/i18n/
