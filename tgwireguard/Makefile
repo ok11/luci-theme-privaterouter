@@ -4,41 +4,45 @@ PKG_NAME:=tgwireguard
 PKG_VERSION:=2.0.9
 PKG_RELEASE:=1
 
-PKG_LICENSE:=GPL-2.0
-PKG_MAINTAINER:=TorGuard
+PKG_SOURCE_PROTO:=git
+PKG_SOURCE_URL:=https://github.com/torguardvpn/tgwireguard.git
+PKG_SOURCE_VERSION:=d34337cd516e359bd00fe600620cfcb698794cb0
+PKG_MIRROR_HASH:=skip
 
 include $(INCLUDE_DIR)/package.mk
 
-define Package/$(PKG_NAME)
+define Package/tgwireguard
   SECTION:=luci
   CATEGORY:=LuCI
-  TITLE:=TorGuard WireGuard VPN
+  SUBMENU:=7. TorGuard
+  TITLE:=LuCI config tools for TorGuard WireGuard client
   DEPENDS:=+kmod-wireguard +wireguard-tools +luci-lua-runtime
   PKGARCH:=all
 endef
 
-define Package/$(PKG_NAME)/description
+define Package/tgwireguard/description
   LuCI configuration for WireGuard VPN, provided by TorGuard.
+endef
+
+define Package/tgwireguard/conffiles
+/etc/config/tgwireguard_cfg
 endef
 
 define Build/Compile
 endef
 
-define Package/$(PKG_NAME)/install
+define Package/tgwireguard/install
 	$(INSTALL_DIR) $(1)/etc/config
-	$(INSTALL_DATA) ./root/etc/config/tgwireguard_cfg $(1)/etc/config/
-
 	$(INSTALL_DIR) $(1)/etc/init.d
-	$(INSTALL_BIN) ./root/etc/init.d/tgwireguard $(1)/etc/init.d/
-
 	$(INSTALL_DIR) $(1)/etc/uci-defaults
-	$(INSTALL_BIN) ./root/etc/uci-defaults/tgwireguard_def $(1)/etc/uci-defaults/
-
 	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/controller/admin
-	$(INSTALL_DATA) ./root/usr/lib/lua/luci/controller/admin/tgwireguard.lua $(1)/usr/lib/lua/luci/controller/admin/
-
 	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/model/cbi/torguard
-	$(INSTALL_DATA) ./root/usr/lib/lua/luci/model/cbi/torguard/tgwireguard.lua $(1)/usr/lib/lua/luci/model/cbi/torguard/
+
+	$(INSTALL_CONF) $(PKG_BUILD_DIR)/files/etc/config/tgwireguard_cfg $(1)/etc/config/
+	$(INSTALL_BIN)  $(PKG_BUILD_DIR)/files/etc/init.d/tgwireguard $(1)/etc/init.d/
+	$(INSTALL_BIN)  $(PKG_BUILD_DIR)/files/etc/uci-defaults/tgwireguard_def $(1)/etc/uci-defaults/
+	$(INSTALL_DATA) $(PKG_BUILD_DIR)/files/usr/lib/lua/luci/controller/admin/tgwireguard.lua $(1)/usr/lib/lua/luci/controller/admin/
+	$(INSTALL_DATA) $(PKG_BUILD_DIR)/files/usr/lib/lua/luci/model/cbi/torguard/tgwireguard.lua $(1)/usr/lib/lua/luci/model/cbi/torguard/
 endef
 
 $(eval $(call BuildPackage,$(PKG_NAME)))

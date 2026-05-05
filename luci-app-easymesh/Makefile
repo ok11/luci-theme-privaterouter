@@ -4,41 +4,14 @@ PKG_NAME:=luci-app-easymesh
 PKG_VERSION:=3.8.17
 PKG_RELEASE:=1
 
-PKG_LICENSE:=GPL-2.0
-PKG_MAINTAINER:=OpenWrt LuCI community
+PKG_SOURCE_PROTO:=git
+PKG_SOURCE_URL:=https://github.com/torguardvpn/luci-app-easymesh.git
+PKG_SOURCE_VERSION:=2969741530fe9ecd2f475f7642ef601b9598f8e3
+PKG_MIRROR_HASH:=skip
 
-include $(INCLUDE_DIR)/package.mk
+PKG_MAINTAINER:=TorGuard <admin@torguard.net>
 
-define Package/$(PKG_NAME)
-  SECTION:=luci
-  CATEGORY:=LuCI
-  TITLE:=LuCI Support for EasyMesh
-  DEPENDS:=+kmod-cfg80211 +batctl-default +kmod-batman-adv +bash +luci-lua-runtime +luci-proto-batman-adv
-  PKGARCH:=all
-endef
+LUCI_TITLE:=LuCI Support for EasyMesh
+LUCI_DEPENDS:=+kmod-cfg80211 +batctl-default +kmod-batman-adv +bash +luci-lua-runtime +luci-compat +libiwinfo-lua +luci-proto-batman-adv
 
-define Package/$(PKG_NAME)/description
-  LuCI support for EasyMesh (Batman-adv based mesh networking).
-endef
-
-define Build/Compile
-endef
-
-define Package/$(PKG_NAME)/install
-	$(INSTALL_DIR) $(1)/easymesh
-	$(INSTALL_BIN) ./root/easymesh/easymesh.sh $(1)/easymesh/
-
-	$(INSTALL_DIR) $(1)/etc/uci-defaults
-	$(INSTALL_BIN) ./root/etc/uci-defaults/luci-easymesh $(1)/etc/uci-defaults/
-
-	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/controller
-	$(INSTALL_DATA) ./root/usr/lib/lua/luci/controller/easymesh.lua $(1)/usr/lib/lua/luci/controller/
-
-	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/model/cbi
-	$(INSTALL_DATA) ./root/usr/lib/lua/luci/model/cbi/easymesh.lua $(1)/usr/lib/lua/luci/model/cbi/
-
-	$(INSTALL_DIR) $(1)/usr/share/rpcd/acl.d
-	$(INSTALL_DATA) ./root/usr/share/rpcd/acl.d/luci-app-easymesh.json $(1)/usr/share/rpcd/acl.d/
-endef
-
-$(eval $(call BuildPackage,$(PKG_NAME)))
+include $(TOPDIR)/feeds/luci/luci.mk
