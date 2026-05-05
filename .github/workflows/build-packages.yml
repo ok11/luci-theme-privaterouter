@@ -24,6 +24,38 @@ jobs:
           fetch-depth: 1
           path: ${{ github.event.repository.name }}
 
+      - name: compute and patch mirror hashes
+        run: |
+          compute_hash() {
+            local name=$1 url=$2 sha=$3
+            local dir="${name}-${sha}"
+            git clone --quiet "$url" "$dir"
+            cd "$dir"
+            git checkout --quiet "$sha"
+            local ts
+            ts=$(git log -1 --no-show-signature --format='@%ct' HEAD)
+            git archive --format=tar --prefix="${dir}/" HEAD > "../${dir}.tar.git"
+            cd ..
+            mkdir -p "${dir}_work"
+            tar -xf "${dir}.tar.git" -C "${dir}_work/"
+            tar --numeric-owner --owner=0 --group=0 --mode='a-s' --sort=name \
+                --mtime="$ts" -cf - -C "${dir}_work" "${dir}/" \
+              | zstd -T0 --ultra -20 -c > "${name}.tar.zst"
+            rm -rf "${dir}" "${dir}_work" "${dir}.tar.git"
+            sha256sum "${name}.tar.zst" | awk '{print $1}'
+          }
+          FEED="${GITHUB_WORKSPACE}/${{ github.event.repository.name }}"
+          for entry in \
+            "tgwireguard2 https://github.com/torguardvpn/tgwireguard2.git 229429586a3fb877f222695589f6a3b5a6e4eb73" \
+            "tgopenvpn https://github.com/torguardvpn/tgopenvpn.git 4b42dac782df7b656740cbe262b27d66e95350f1" \
+            "tgv2ray https://github.com/torguardvpn/tgv2ray.git 375ea1b7bf0d05b3489f27f8e877f6d0880c7d01" \
+            "luci-app-easymesh https://github.com/torguardvpn/luci-app-easymesh.git fe1999e6c3391fa4a1862dbef3755e97b4491e15"; do
+            read -r name url sha <<< "$entry"
+            hash=$(compute_hash "$name" "$url" "$sha")
+            echo "PKG_MIRROR_HASH ($name): $hash"
+            sed -i "s/PKG_MIRROR_HASH:=skip/PKG_MIRROR_HASH:=${hash}/" "${FEED}/${name}/Makefile"
+          done
+
       - name: build
         uses: openwrt/gh-action-sdk@main
         env:
