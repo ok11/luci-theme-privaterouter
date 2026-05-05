@@ -123,7 +123,7 @@ Language selection is available from the header bar with country flag icons. Rig
 
 ## Installation
 
-### OpenWrt 25.x (apk-based)
+### OpenWrt 25.12.x (apk-based)
 
 OpenWrt 25.x replaced `opkg` with `apk`. Install the built `.apk` packages in this order:
 
@@ -306,7 +306,7 @@ The CI will then fetch the new release and build a fresh `.apk` on the next run.
 
 | OpenWrt version | Package format | Status |
 |----------------|---------------|--------|
-| 25.x (SNAPSHOT) | `.apk` | Supported |
+| 25.12.x (latest stable) | `.apk` | Supported |
 | 24.10 | `.ipk` | Supported |
 | 23.05 | `.ipk` | Should work |
 
