@@ -14,13 +14,23 @@ The best part? It installs as a standard LuCI theme and **does not modify any Op
 
 The PrivateRouter Theme sits on top of LuCI as a standard OpenWrt theme package. It uses the same LuCI framework, the same UCI configuration system, and the same ubus RPC calls that power every OpenWrt router. Nothing is patched, replaced, or overwritten.
 
-Three packages work together to deliver the experience:
+Three core packages work together to deliver the experience:
 
 | Package | What It Does |
 |---------|-------------|
 | **luci-theme-oat** | The visual theme -- Material Design 3 styling, dark mode, the Simple/Advanced toggle, and all the icons and layout |
-| **luci-mod-dashboard** | A real-time dashboard with CPU/memory gauges, internet status, Wi-Fi info, VPN status, connected devices, and traffic stats |
+| **luci-mod-pr-dashboard** | A real-time dashboard with CPU/memory gauges, internet status, Wi-Fi info, VPN status, connected devices, and traffic stats |
 | **luci-mod-simple** | The simplified interface pages -- Wi-Fi, Internet, VPN, Devices, Docker, System settings, and more |
+
+Five additional packages provide optional VPN and mesh features. They are built from source in this repository and installable directly via the Software page in the simple UI:
+
+| Package | What It Does |
+|---------|-------------|
+| **tgwireguard** | TorGuard WireGuard VPN LuCI UI |
+| **tgwireguard2** | TorGuard WireGuard VPN second profile LuCI UI |
+| **tgopenvpn** | TorGuard OpenVPN LuCI UI |
+| **tgv2ray** | TorGuard V2Ray / sing-box LuCI UI |
+| **luci-app-easymesh** | EasyMesh (Batman-adv) LuCI UI |
 
 When you log in, you see the **Simple mode** by default: a clean sidebar with only the pages you need. Flip the **Simple / Advanced toggle** in the header bar and you get the full traditional LuCI menu with every option OpenWrt offers. Your preference is remembered across sessions.
 
@@ -113,12 +123,37 @@ Language selection is available from the header bar with country flag icons. Rig
 
 ## Installation
 
-### Requirements
+### OpenWrt 25.x (apk-based)
 
-- An OpenWrt router running a recent release (23.05+)
-- LuCI web interface installed (`luci-base`)
+OpenWrt 25.x replaced `opkg` with `apk`. Install the built `.apk` packages in this order:
 
-### Install the Three Packages
+**Step 1 -- Install the OAT Theme**
+
+```bash
+apk add --allow-untrusted luci-theme-oat_*.apk
+```
+
+**Step 2 -- Install the Dashboard Module**
+
+```bash
+apk add --allow-untrusted luci-mod-pr-dashboard_*.apk
+```
+
+**Step 3 -- Install the Simple UI Module**
+
+```bash
+apk add --allow-untrusted luci-mod-simple_*.apk
+```
+
+After installing all three, clear the LuCI cache and restart the web server:
+
+```bash
+rm -rf /tmp/luci-*
+/etc/init.d/rpcd restart
+/etc/init.d/uhttpd restart
+```
+
+### OpenWrt 24.10 and earlier (opkg-based)
 
 Install all three `.ipk` packages **in this order** to satisfy dependencies:
 
@@ -131,7 +166,7 @@ opkg install luci-theme-oat_*.ipk
 **Step 2 -- Install the Dashboard Module**
 
 ```bash
-opkg install luci-mod-dashboard_*.ipk
+opkg install luci-mod-pr-dashboard_*.ipk
 ```
 
 **Step 3 -- Install the Simple UI Module**
@@ -152,20 +187,24 @@ Then open your router's web interface. The LuCi theme will be active and you wil
 
 ### Optional VPN and Mesh Packages
 
-To enable the built-in VPN and mesh pages, install the corresponding TorGuard and Easy Mesh packages from the Software page in the simple UI, or manually:
+The TorGuard VPN and EasyMesh packages are included in the CI build artifacts alongside the core packages. To enable the built-in VPN and mesh pages, install them from the Software page in the simple UI, or manually.
+
+**OpenWrt 25.x:**
 
 ```bash
-# TorGuard WireGuard
-opkg install tgwireguard2_*.ipk
+apk add --allow-untrusted tgwireguard_*.apk tgwireguard2_*.apk
+apk add --allow-untrusted tgopenvpn_*.apk
+apk add --allow-untrusted tgv2ray_*.apk
+apk add --allow-untrusted luci-app-easymesh_*.apk
+```
 
-# TorGuard OpenVPN
+**OpenWrt 24.10 and earlier:**
+
+```bash
+opkg install tgwireguard_*.ipk tgwireguard2_*.ipk
 opkg install tgopenvpn_*.ipk
-
-# TorGuard V2Ray
 opkg install tgv2ray_*.ipk
-
-# Easy Mesh (requires batman-adv kernel module)
-opkg install kmod-batman-adv batctl-default luci-app-easymesh_*.ipk
+opkg install luci-app-easymesh_*.ipk
 ```
 
 ---
@@ -187,57 +226,91 @@ This means every standard LuCI package, plugin, and configuration page continues
 ## Project Structure
 
 ```
-privaterouter-oat-theme/
+luci-theme-privaterouter/
 ├── luci-theme-oat/                  # Theme package
 │   ├── htdocs/luci-static/oat/      # CSS, JS, fonts, icons, logo
 │   ├── ucode/template/themes/oat/   # Header, footer, login templates
 │   └── root/etc/uci-defaults/       # Auto-activate theme on install
 │
-├── luci-mod-dashboard/              # Dashboard module
+├── luci-mod-pr-dashboard/           # Dashboard module
 │   ├── htdocs/.../view/dashboard/   # Dashboard JS, CSS, icons
 │   └── root/usr/libexec/            # VPN status detection script
 │
-└── luci-mod-simple/                 # Simplified UI module
-    ├── htdocs/.../view/simple/      # 25+ page JS files, CSS
-    │   ├── i18n/                    # 20 language translation files
-    │   ├── flags/                   # Country flag SVGs
-    │   └── appstore/                # Docker app catalog
-    └── root/usr/share/              # Menu definitions, ACL permissions
+├── luci-mod-simple/                 # Simplified UI module
+│   ├── htdocs/.../view/simple/      # 25+ page JS files, CSS
+│   │   ├── i18n/                    # 20 language translation files
+│   │   ├── flags/                   # Country flag SVGs
+│   │   └── appstore/                # Docker app catalog
+│   └── root/usr/share/              # Menu definitions, ACL permissions
+│
+├── tgwireguard/                     # TorGuard WireGuard LuCI UI
+├── tgwireguard2/                    # TorGuard WireGuard profile 2 LuCI UI
+├── tgopenvpn/                       # TorGuard OpenVPN LuCI UI
+├── tgv2ray/                         # TorGuard V2Ray LuCI UI
+└── luci-app-easymesh/               # EasyMesh (Batman-adv) LuCI UI
 ```
 
 ---
 
 ## Building from Source
 
-To build the `.ipk` packages yourself using the OpenWrt build system:
+Packages are built automatically via GitHub Actions using the [openwrt/gh-action-sdk](https://github.com/openwrt/gh-action-sdk). Trigger a build manually from the Actions tab, or push to `main`. Artifacts (`.apk` for OpenWrt 25.x) are attached to each workflow run.
+
+To build locally using the OpenWrt SDK:
 
 ```bash
-# Place each package directory in the OpenWrt feeds
-cp -r luci-theme-oat   feeds/luci/themes/luci-theme-oat
-cp -r luci-mod-dashboard feeds/luci/modules/luci-mod-dashboard
-cp -r luci-mod-simple  feeds/luci/applications/luci-mod-simple
+# Clone into a directory the SDK can find as a feed
+git clone https://github.com/ok11/luci-theme-privaterouter
 
-# Update and install feeds
-./scripts/feeds update -a
-./scripts/feeds install luci-theme-oat luci-mod-dashboard luci-mod-simple
+# Add as a feed in feeds.conf
+echo "src-link action /path/to/luci-theme-privaterouter" >> feeds.conf
 
-# Select in menuconfig
-make menuconfig
-# Navigate to LuCI > Themes > luci-theme-oat
-# Navigate to LuCI > Modules > luci-mod-dashboard
-# Navigate to LuCI > Applications > luci-mod-simple
+# Update and install
+./scripts/feeds update action
+./scripts/feeds install luci-theme-oat luci-mod-pr-dashboard luci-mod-simple \
+    tgwireguard tgwireguard2 tgopenvpn tgv2ray luci-app-easymesh
 
-# Build
+# Build all packages
 make package/luci-theme-oat/compile
-make package/luci-mod-dashboard/compile
+make package/luci-mod-pr-dashboard/compile
 make package/luci-mod-simple/compile
+make package/tgwireguard/compile
+make package/tgwireguard2/compile
+make package/tgopenvpn/compile
+make package/tgv2ray/compile
+make package/luci-app-easymesh/compile
 ```
 
-The resulting `.ipk` files will be in `bin/packages/`.
+The resulting `.apk` (or `.ipk` on older SDKs) files will be in `bin/packages/`.
+
+### Updating the TorGuard and EasyMesh packages
+
+The `tgwireguard`, `tgwireguard2`, `tgopenvpn`, `tgv2ray`, and `luci-app-easymesh` package source files are committed directly to this repo. They were originally extracted from TorGuard-supplied `.ipk` files. Since these are closed-source LuCI UI wrappers, there is no upstream source URL to track automatically -- they must be updated manually when TorGuard ships new versions.
+
+To update a package from a new `.ipk`:
+
+```bash
+# Extract the new ipk
+mkdir /tmp/pkg && cd /tmp/pkg
+cp /path/to/tgwireguard_NEW_VERSION_all.ipk pkg.ipk
+tar xzf pkg.ipk          # extracts control.tar.gz and data.tar.gz
+tar xzf data.tar.gz      # extracts the installed file tree
+
+# Copy updated files into the repo, replacing the old ones
+cp -r . /path/to/luci-theme-privaterouter/tgwireguard/root/
+
+# Update PKG_VERSION in the Makefile, commit, and push
+```
 
 ---
 
 ## Compatibility
+
+| OpenWrt version | Package format | Status |
+|----------------|---------------|--------|
+| 25.x (SNAPSHOT) | `.apk` | Supported |
+| 24.10 | `.ipk` | Supported |
+| 23.05 | `.ipk` | Should work |
 
 - Works with any OpenWrt device that supports LuCI
 - Responsive layout adapts to desktop, tablet, and mobile screens
