@@ -19,7 +19,7 @@ Three core packages work together to deliver the experience:
 | Package | What It Does |
 |---------|-------------|
 | **luci-theme-oat** | The visual theme -- Material Design 3 styling, dark mode, the Simple/Advanced toggle, and all the icons and layout |
-| **luci-mod-dashboard** | The standard OpenWrt real-time dashboard (CPU/memory gauges, internet status, Wi-Fi info, connected devices). Pulled from the OpenWrt feed. |
+| **luci-mod-dashboard** | The standard OpenWrt real-time dashboard (CPU/memory gauges, internet status, Wi-Fi info, connected devices). Included in every OpenWrt firmware image. |
 | **luci-mod-simple** | The simplified interface pages -- Wi-Fi, Internet, VPN, Devices, Docker, System settings, and more |
 
 Five additional packages provide optional VPN and mesh features. They are built from source in this repository and installable directly via the Software page in the simple UI:
@@ -131,7 +131,6 @@ OpenWrt 25.x replaced `opkg` with `apk`. Install the three core packages:
 
 ```bash
 apk add --allow-untrusted luci-theme-oat_*.apk
-apk add --allow-untrusted luci-mod-dashboard_*.apk
 apk add --allow-untrusted luci-mod-simple_*.apk
 ```
 
@@ -149,7 +148,6 @@ Install the three core packages **in this order** to satisfy dependencies:
 
 ```bash
 opkg install luci-theme-oat_*.ipk
-opkg install luci-mod-dashboard_*.ipk
 opkg install luci-mod-simple_*.ipk
 ```
 
