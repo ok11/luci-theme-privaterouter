@@ -285,17 +285,20 @@ The resulting `.apk` (or `.ipk` on older SDKs) files will be in `bin/packages/`.
 
 ### Updating the TorGuard and EasyMesh packages
 
-These packages are built directly from their upstream GitHub repositories under [torguardvpn/](https://github.com/torguardvpn). Each Makefile pins a specific commit via `PKG_SOURCE_VERSION`. To update to a newer upstream commit:
+These packages are built directly from their upstream GitHub repositories under [torguardvpn/](https://github.com/torguardvpn). Each Makefile pins a specific release tag commit via `PKG_SOURCE_VERSION`. To update to a new release:
 
 ```bash
-# Get the latest commit hash from upstream
-curl -s https://api.github.com/repos/torguardvpn/tgwireguard/commits/main \
-  | python3 -c "import sys,json; print(json.load(sys.stdin)['sha'])"
+# Get the commit SHA of the latest release tag
+TAG=$(curl -s https://api.github.com/repos/torguardvpn/tgwireguard/releases/latest \
+  | python3 -c "import sys,json; print(json.load(sys.stdin)['tag_name'])")
+SHA=$(curl -s "https://api.github.com/repos/torguardvpn/tgwireguard/git/refs/tags/$TAG" \
+  | python3 -c "import sys,json; print(json.load(sys.stdin)['object']['sha'])")
+echo "tag=$TAG sha=$SHA"
 
-# Update PKG_SOURCE_VERSION in tgwireguard/Makefile, commit, and push
+# Update PKG_VERSION and PKG_SOURCE_VERSION in tgwireguard/Makefile, commit, and push
 ```
 
-The CI will then fetch the new source and build a fresh `.apk` on the next run.
+The CI will then fetch the new release and build a fresh `.apk` on the next run.
 
 ---
 

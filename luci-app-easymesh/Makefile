@@ -6,7 +6,7 @@ PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=https://github.com/torguardvpn/luci-app-easymesh.git
-PKG_SOURCE_VERSION:=2969741530fe9ecd2f475f7642ef601b9598f8e3
+PKG_SOURCE_VERSION:=fe1999e6c3391fa4a1862dbef3755e97b4491e15
 PKG_MIRROR_HASH:=skip
 
 PKG_MAINTAINER:=TorGuard <admin@torguard.net>

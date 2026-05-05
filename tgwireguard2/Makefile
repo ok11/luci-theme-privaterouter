@@ -1,12 +1,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=tgwireguard2
-PKG_VERSION:=2.0.9
+PKG_VERSION:=2.0.9-r0
 PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=https://github.com/torguardvpn/tgwireguard2.git
-PKG_SOURCE_VERSION:=81ca072361a1cc9f59dd5eae7dbe3d3745f53313
+PKG_SOURCE_VERSION:=229429586a3fb877f222695589f6a3b5a6e4eb73
 PKG_MIRROR_HASH:=skip
 
 include $(INCLUDE_DIR)/package.mk
