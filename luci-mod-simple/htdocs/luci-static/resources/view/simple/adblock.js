@@ -104,7 +104,7 @@ return view.extend({
 			L.resolveDefault(callFileRead('/etc/adblock/adblock.whitelist'), ''),
 			L.resolveDefault(callFileRead('/etc/adblock/adblock.blacklist'), ''),
 			L.resolveDefault(callFileExec('/bin/sh', ['-c',
-				'opkg list-installed 2>/dev/null | grep "^adblock "'
+				'apk list --installed 2>/dev/null | grep "^adblock-"'
 			]), {})
 		]);
 	},

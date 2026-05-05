@@ -108,7 +108,7 @@ return view.extend({
 			L.resolveDefault(callFileExec('/etc/init.d/banip', ['status']), {}),
 			L.resolveDefault(callFileRead('/etc/banip/banip.countries'), ''),
 			L.resolveDefault(callFileExec('/bin/sh', ['-c',
-				'opkg list-installed 2>/dev/null | grep "^banip "'
+				'apk list --installed 2>/dev/null | grep "^banip-"'
 			]), {}),
 			L.resolveDefault(callFileExec('/bin/sh', ['-c',
 				'ip -o link show 2>/dev/null | awk -F": " \'{print $2}\' | grep -v "^lo$"'

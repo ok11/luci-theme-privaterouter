@@ -43,7 +43,7 @@ var BUNDLES = [
 		icon: SVG.vpn,
 		color: '#7c3aed',
 		packages: ['wireguard-tools', 'kmod-wireguard', 'luci-proto-wireguard', 'qrencode'],
-		local_ipks: ['tgwireguard_2.0.9-r0_all.ipk', 'tgwireguard2_2.0.9-r0_all.ipk']
+		local_apks: ['tgwireguard_2.0.9-r0_all.ipk', 'tgwireguard2_2.0.9-r0_all.ipk']
 	},
 	{
 		id: 'openvpn',
@@ -52,7 +52,7 @@ var BUNDLES = [
 		icon: SVG.vpn,
 		color: '#ea580c',
 		packages: ['openvpn-openssl'],
-		local_ipks: ['tgopenvpn_25.052.15245.cfd9c4d_all.ipk']
+		local_apks: ['tgopenvpn_25.052.15245.cfd9c4d_all.ipk']
 	},
 	{
 		id: 'v2ray',
@@ -61,7 +61,7 @@ var BUNDLES = [
 		icon: SVG.vpn,
 		color: '#0891b2',
 		packages: ['sing-box', 'curl', 'jq', 'bash', 'coreutils-base64'],
-		local_ipks: ['tgv2ray_1.0.0-6_all.ipk']
+		local_apks: ['tgv2ray_1.0.0-6_all.ipk']
 	},
 	{
 		id: 'smb',
@@ -171,7 +171,7 @@ var BUNDLES = [
 		icon: SVG.net,
 		color: '#059669',
 		packages: ['kmod-batman-adv', 'batctl-default'],
-		local_ipks: ['luci-app-easymesh_3.8.17-r1_all.ipk']
+		local_apks: ['luci-app-easymesh_3.8.17-r1_all.ipk']
 	},
 	{
 		id: 'snort3',
@@ -196,7 +196,7 @@ return view.extend({
 
 	load: function() {
 		return L.resolveDefault(callFileExec('/bin/sh', ['-c',
-			"opkg list-installed 2>/dev/null | awk '{print $1}'"
+			"apk list --installed 2>/dev/null | awk '{print $1}' | sed 's/-[0-9].*//' "
 		]), {});
 	},
 
@@ -221,20 +221,20 @@ return view.extend({
 		var self = this;
 		var installed = 0;
 		var allPkgs = bundle.packages.slice();
-		(bundle.local_ipks || []).forEach(function(f) { allPkgs.push(self.ipkPkgName(f)); });
+		(bundle.local_apks || []).forEach(function(f) { allPkgs.push(self.apkPkgName(f)); });
 		allPkgs.forEach(function(p) { if (self._installed[p]) installed++; });
 		return { installed: installed, total: allPkgs.length, full: installed === allPkgs.length };
 	},
 
-	ipkPkgName: function(filename) {
-		return filename.replace(/_[0-9].*$/, '');
+	apkPkgName: function(filename) {
+		return filename.replace(/_[0-9].*$/, '').replace(/-[0-9].*$/, '');
 	},
 
 	runPkgAction: function(action, bundle, btn, statusEl) {
 		var self = this;
 		var packages = bundle.packages;
-		var localIpks = bundle.local_ipks || [];
-		var IPK_DIR = '/usr/share/privaterouter/ipks/';
+		var localApks = bundle.local_apks || [];
+		var APK_DIR = '/usr/share/privaterouter/apks/';
 
 		btn.disabled = true;
 		btn.style.opacity = '0.6';
@@ -243,14 +243,14 @@ return view.extend({
 
 		var cmds = [];
 		if (action === 'install') {
-			cmds.push('opkg update 2>&1');
-			packages.forEach(function(p) { cmds.push('opkg install ' + p + ' 2>&1'); });
-			localIpks.forEach(function(f) { cmds.push('opkg install ' + IPK_DIR + f + ' 2>&1'); });
+			cmds.push('apk update 2>&1');
+			packages.forEach(function(p) { cmds.push('apk add ' + p + ' 2>&1'); });
+			localApks.forEach(function(f) { cmds.push('apk add --allow-untrusted ' + APK_DIR + f + ' 2>&1'); });
 		} else {
-			localIpks.slice().reverse().forEach(function(f) {
-				cmds.push('opkg remove ' + self.ipkPkgName(f) + ' 2>&1');
+			localApks.slice().reverse().forEach(function(f) {
+				cmds.push('apk del ' + self.apkPkgName(f) + ' 2>&1');
 			});
-			packages.slice().reverse().forEach(function(p) { cmds.push('opkg remove ' + p + ' 2>&1'); });
+			packages.slice().reverse().forEach(function(p) { cmds.push('apk del ' + p + ' 2>&1'); });
 		}
 
 		var cmd = cmds.join(' ; ') + ' ; echo __DONE__';
@@ -307,7 +307,7 @@ return view.extend({
 		updateBtn.addEventListener('click', function() {
 			updateBtn.disabled = true;
 			updateBtn.innerHTML = icon(SVG.refresh, 14, '#fff') + ' Updating...';
-			L.resolveDefault(callFileExec('/bin/sh', ['-c', 'opkg update 2>&1 ; echo __DONE__']), {}).then(function(res) {
+			L.resolveDefault(callFileExec('/bin/sh', ['-c', 'apk update 2>&1 ; echo __DONE__']), {}).then(function(res) {
 				var ok = (res && res.stdout || '').indexOf('__DONE__') !== -1;
 				self.showToast(ok ? 'Package lists updated!' : 'Update failed');
 				updateBtn.disabled = false;
@@ -353,8 +353,8 @@ return view.extend({
 				pkgItem.appendChild(el('span', 'sw-pkg-name', p));
 				pkgList.appendChild(pkgItem);
 			});
-			(b.local_ipks || []).forEach(function(f) {
-				var pName = self.ipkPkgName(f);
+			(b.local_apks || []).forEach(function(f) {
+				var pName = self.apkPkgName(f);
 				var pkgItem = el('div', 'sw-pkg-item');
 				var pkgStatus = self._installed[pName]
 					? el('span', 'sw-pkg-dot sw-pkg-installed')

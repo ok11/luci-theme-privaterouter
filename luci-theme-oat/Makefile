@@ -15,7 +15,7 @@ PKG_LICENSE:=Apache-2.0
 
 define Package/luci-theme-oat/postrm
 #!/bin/sh
-[ -n "$${IPKG_INSTROOT}" ] || {
+[ -n "$${root}" ] || {
 	uci -q delete luci.themes.Oat
 	uci set luci.main.mediaurlbase='/luci-static/bootstrap'
 	uci commit luci

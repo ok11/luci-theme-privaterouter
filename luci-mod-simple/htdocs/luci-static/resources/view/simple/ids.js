@@ -79,7 +79,7 @@ return view.extend({
 				'[ -f /var/log/alert_fast.txt ] && tail -30 /var/log/alert_fast.txt | tac 2>/dev/null || echo ""'
 			]), {}),
 			L.resolveDefault(callFileExec('/bin/sh', ['-c',
-				'opkg list-installed 2>/dev/null | grep "^snort3 "'
+				'apk list --installed 2>/dev/null | grep "^snort3-"'
 			]), {}),
 			L.resolveDefault(callFileExec('/bin/sh', ['-c',
 				'awk \'/MemTotal/ {t=$2} /MemAvailable/ {a=$2} END {printf "%d %d", t/1024, (t-a)/1024}\' /proc/meminfo'
