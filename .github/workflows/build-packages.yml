@@ -28,7 +28,7 @@ jobs:
         uses: openwrt/gh-action-sdk@main
         env:
           ARCH: ${{ matrix.arch }}-${{ matrix.branch }}
-          PACKAGES: luci-theme-oat luci-mod-simple tgwireguard tgwireguard2 tgopenvpn tgv2ray luci-app-easymesh
+          PACKAGES: luci-theme-oat luci-mod-simple
           NO_REFRESH_CHECK: true
 
       - name: upload
