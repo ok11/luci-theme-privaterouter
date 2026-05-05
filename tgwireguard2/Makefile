@@ -7,7 +7,7 @@ PKG_RELEASE:=1
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=https://github.com/torguardvpn/tgwireguard2.git
 PKG_SOURCE_VERSION:=229429586a3fb877f222695589f6a3b5a6e4eb73
-PKG_MIRROR_HASH:=skip
+PKG_MIRROR_HASH:=feba926acc5c2b2e839309f2baafc0e575fd613bc275bfc5daff5eedba2d8100
 
 include $(INCLUDE_DIR)/package.mk
 
