@@ -2,14 +2,14 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=luci-mod-simple
 PKG_VERSION:=1.0.0
-PKG_RELEASE:=6
+PKG_RELEASE:=7
 
 PKG_LICENSE:=MIT
 PKG_MAINTAINER:=OAT Theme Contributors
 
 LUCI_TITLE:=LuCI Simple Mode Module
 LUCI_DESCRIPTION:=Simplified LuCI interface pages for everyday router management. Provides clean, modern views for Wi-Fi, Internet, VPN, Docker, Devices, and System settings. Works with the OAT theme Simple/Advanced mode toggle.
-LUCI_DEPENDS:=+luci-base +luci-theme-oat +luci-mod-pr-dashboard
+LUCI_DEPENDS:=+luci-base +luci-theme-oat +luci-mod-dashboard
 LUCI_PKGARCH:=all
 
 include $(TOPDIR)/feeds/luci/luci.mk
