@@ -285,22 +285,17 @@ The resulting `.apk` (or `.ipk` on older SDKs) files will be in `bin/packages/`.
 
 ### Updating the TorGuard and EasyMesh packages
 
-The `tgwireguard`, `tgwireguard2`, `tgopenvpn`, `tgv2ray`, and `luci-app-easymesh` package source files are committed directly to this repo. They were originally extracted from TorGuard-supplied `.ipk` files. Since these are closed-source LuCI UI wrappers, there is no upstream source URL to track automatically -- they must be updated manually when TorGuard ships new versions.
-
-To update a package from a new `.ipk`:
+These packages are built directly from their upstream GitHub repositories under [torguardvpn/](https://github.com/torguardvpn). Each Makefile pins a specific commit via `PKG_SOURCE_VERSION`. To update to a newer upstream commit:
 
 ```bash
-# Extract the new ipk
-mkdir /tmp/pkg && cd /tmp/pkg
-cp /path/to/tgwireguard_NEW_VERSION_all.ipk pkg.ipk
-tar xzf pkg.ipk          # extracts control.tar.gz and data.tar.gz
-tar xzf data.tar.gz      # extracts the installed file tree
+# Get the latest commit hash from upstream
+curl -s https://api.github.com/repos/torguardvpn/tgwireguard/commits/main \
+  | python3 -c "import sys,json; print(json.load(sys.stdin)['sha'])"
 
-# Copy updated files into the repo, replacing the old ones
-cp -r . /path/to/luci-theme-privaterouter/tgwireguard/root/
-
-# Update PKG_VERSION in the Makefile, commit, and push
+# Update PKG_SOURCE_VERSION in tgwireguard/Makefile, commit, and push
 ```
+
+The CI will then fetch the new source and build a fresh `.apk` on the next run.
 
 ---
 
