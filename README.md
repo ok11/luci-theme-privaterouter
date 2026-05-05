@@ -123,29 +123,19 @@ Language selection is available from the header bar with country flag icons. Rig
 
 ## Installation
 
+Only three packages are required. The VPN and mesh packages are optional — the UI works without them and shows empty state on those pages until they are installed via the built-in Software page.
+
 ### OpenWrt 25.12.x (apk-based)
 
-OpenWrt 25.x replaced `opkg` with `apk`. Install the built `.apk` packages in this order:
-
-**Step 1 -- Install the OAT Theme**
+OpenWrt 25.x replaced `opkg` with `apk`. Install the three core packages:
 
 ```bash
 apk add --allow-untrusted luci-theme-oat_*.apk
-```
-
-**Step 2 -- Install the Dashboard Module**
-
-```bash
 apk add --allow-untrusted luci-mod-pr-dashboard_*.apk
-```
-
-**Step 3 -- Install the Simple UI Module**
-
-```bash
 apk add --allow-untrusted luci-mod-simple_*.apk
 ```
 
-After installing all three, clear the LuCI cache and restart the web server:
+Then clear the LuCI cache and restart the web server:
 
 ```bash
 rm -rf /tmp/luci-*
@@ -155,27 +145,15 @@ rm -rf /tmp/luci-*
 
 ### OpenWrt 24.10 and earlier (opkg-based)
 
-Install all three `.ipk` packages **in this order** to satisfy dependencies:
-
-**Step 1 -- Install the OAT Theme**
+Install the three core packages **in this order** to satisfy dependencies:
 
 ```bash
 opkg install luci-theme-oat_*.ipk
-```
-
-**Step 2 -- Install the Dashboard Module**
-
-```bash
 opkg install luci-mod-pr-dashboard_*.ipk
-```
-
-**Step 3 -- Install the Simple UI Module**
-
-```bash
 opkg install luci-mod-simple_*.ipk
 ```
 
-After installing all three, clear the LuCI cache and restart the web server:
+Then clear the LuCI cache and restart the web server:
 
 ```bash
 rm -rf /tmp/luci-*
@@ -183,29 +161,31 @@ rm -rf /tmp/luci-*
 /etc/init.d/uhttpd restart
 ```
 
-Then open your router's web interface. The LuCi theme will be active and you will see the new simplified dashboard.
+Open your router's web interface. The theme will be active and you will see the simplified dashboard.
 
 ### Optional VPN and Mesh Packages
 
-The TorGuard VPN and EasyMesh packages are included in the CI build artifacts alongside the core packages. To enable the built-in VPN and mesh pages, install them from the Software page in the simple UI, or manually.
+The TorGuard VPN and EasyMesh packages are included in the release artifacts alongside the core packages. The easiest way to install them is via **System → Software** in the simple UI. Or install manually from the release artifacts:
 
-**OpenWrt 25.x:**
+**OpenWrt 25.12.x:**
 
 ```bash
-apk add --allow-untrusted tgwireguard_*.apk tgwireguard2_*.apk
-apk add --allow-untrusted tgopenvpn_*.apk
-apk add --allow-untrusted tgv2ray_*.apk
-apk add --allow-untrusted luci-app-easymesh_*.apk
+apk add --allow-untrusted tgwireguard_*.apk tgwireguard2_*.apk  # TorGuard WireGuard
+apk add --allow-untrusted tgopenvpn_*.apk                        # TorGuard OpenVPN
+apk add --allow-untrusted tgv2ray_*.apk                          # TorGuard V2Ray
+apk add --allow-untrusted luci-app-easymesh_*.apk                # EasyMesh
 ```
 
 **OpenWrt 24.10 and earlier:**
 
 ```bash
-opkg install tgwireguard_*.ipk tgwireguard2_*.ipk
-opkg install tgopenvpn_*.ipk
-opkg install tgv2ray_*.ipk
-opkg install luci-app-easymesh_*.ipk
+opkg install tgwireguard_*.ipk tgwireguard2_*.ipk  # TorGuard WireGuard
+opkg install tgopenvpn_*.ipk                        # TorGuard OpenVPN
+opkg install tgv2ray_*.ipk                          # TorGuard V2Ray
+opkg install luci-app-easymesh_*.ipk                # EasyMesh
 ```
+
+> **Note:** Each VPN package pulls in its own dependencies (`kmod-wireguard`, `openvpn-openssl`, `sing-box`, etc.) which can be significant on routers with limited flash. Only install what you need.
 
 ---
 
