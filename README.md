@@ -310,6 +310,8 @@ The CI will then fetch the new release and build a fresh `.apk` on the next run.
 | 24.10 | `.ipk` | Supported |
 | 23.05 | `.ipk` | Should work |
 
+> Packages are built against the **25.12.2** SDK. The CI workflow `branch` matrix value should be updated to `25.12.3` once the corresponding SDK image is published to ghcr.io.
+
 - Works with any OpenWrt device that supports LuCI
 - Responsive layout adapts to desktop, tablet, and mobile screens
 - Self-contained -- no external CDNs, fonts, or JavaScript libraries required

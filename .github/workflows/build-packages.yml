@@ -15,7 +15,7 @@ jobs:
           - x86_64
           - aarch64_generic
         branch:
-          - SNAPSHOT
+          - 25.12.2
 
     steps:
       - name: checkout
