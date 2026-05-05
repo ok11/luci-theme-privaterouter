@@ -9,7 +9,7 @@ PKG_MAINTAINER:=OAT Theme Contributors
 
 LUCI_TITLE:=LuCI Simple Mode Module
 LUCI_DESCRIPTION:=Simplified LuCI interface pages for everyday router management. Provides clean, modern views for Wi-Fi, Internet, VPN, Docker, Devices, and System settings. Works with the OAT theme Simple/Advanced mode toggle.
-LUCI_DEPENDS:=+luci-base +luci-theme-oat +luci-mod-dashboard
+LUCI_DEPENDS:=+luci-base +luci-theme-oat +luci-mod-pr-dashboard
 LUCI_PKGARCH:=all
 
 include $(TOPDIR)/feeds/luci/luci.mk

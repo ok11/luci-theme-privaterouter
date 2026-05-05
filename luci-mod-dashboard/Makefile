@@ -1,6 +1,6 @@
 include $(TOPDIR)/rules.mk
 
-PKG_NAME:=luci-mod-dashboard
+PKG_NAME:=luci-mod-pr-dashboard
 PKG_VERSION:=1.0.0
 PKG_RELEASE:=1
 

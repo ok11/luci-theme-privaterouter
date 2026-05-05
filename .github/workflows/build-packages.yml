@@ -28,7 +28,7 @@ jobs:
         uses: openwrt/gh-action-sdk@main
         env:
           ARCH: ${{ matrix.arch }}-${{ matrix.branch }}
-          PACKAGES: luci-theme-oat luci-mod-dashboard luci-mod-simple
+          PACKAGES: luci-theme-oat luci-mod-pr-dashboard luci-mod-simple
           NO_REFRESH_CHECK: true
 
       - name: upload
